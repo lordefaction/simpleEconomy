@@ -11,6 +11,13 @@ import org.spongepowered.api.text.format.TextColors;
 import simpleEconomy.main.SimpleEconomy;
 
 public class MoneyVersionCommand implements CommandExecutor {
+	
+	private SimpleEconomy plugin;
+	
+	public MoneyVersionCommand(SimpleEconomy plugin) {
+		this.plugin = plugin;
+	}
+	
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		try {
 			src.sendMessage(Text.builder("simpleEconomy version " + SimpleEconomy.getGame().getPluginManager().getPlugin("simpleEconomy").get().getVersion()).color(TextColors.BLUE).build());
@@ -18,6 +25,7 @@ public class MoneyVersionCommand implements CommandExecutor {
 			return CommandResult.success();
 		} catch(NullPointerException exception) {
 			src.sendMessage(Text.of("Error while processing your request ! Please contact your administrator !"));
+			plugin.getLogger().error(exception.getMessage());
 			return CommandResult.empty();
 		}
 	}

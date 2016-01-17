@@ -15,6 +15,12 @@ import simpleEconomy.main.SimpleEconomy;
 
 public class MoneyHelpCommand implements CommandExecutor {
 
+	private SimpleEconomy plugin;
+	
+	public MoneyHelpCommand(SimpleEconomy plugin) {
+		this.plugin = plugin;
+	}
+	
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		try {
 			HashMap<String, CommandSpec> commandsList = SimpleEconomy.commandsList;
@@ -31,6 +37,7 @@ public class MoneyHelpCommand implements CommandExecutor {
 			return CommandResult.success();
 		} catch(NullPointerException exception) {
 			src.sendMessage(Text.of("Error while processing your request ! Please contact your administrator !"));
+			plugin.getLogger().error(exception.getMessage());
 			return CommandResult.empty();
 		}
 	}

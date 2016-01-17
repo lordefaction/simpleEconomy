@@ -44,7 +44,6 @@ public class BalanceCommand implements CommandExecutor {
 			} else return CommandResult.empty();
 		} catch(NullPointerException exception) {
 			src.sendMessage(Text.of("Error while processing your request ! Please contact your administrator !"));
-			plugin.getLogger().error("Le joueur " + src.getName() + " a demande d'afficher la balance du joueur " + args.<Player>getOne("player").get().getName());
 			plugin.getLogger().error(exception.getMessage());
 			return CommandResult.empty();
 		}
