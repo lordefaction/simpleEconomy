@@ -73,6 +73,7 @@ public class EconomyManager implements EconomyService {
 		double value = getAccountAmount(accountName);
 		accountsNode.getNode(accountName, "amount").setValue(value + amount);
 		saveAcountsFile();
+		if(plugin.isEnableLogs()) plugin.getLogManager().addLogTrace("Adding " + amount + plugin.getPluralSymbol() + " from " + accountName + "'s account.");
 	}
 	
 	/**
@@ -84,6 +85,7 @@ public class EconomyManager implements EconomyService {
 		double value = getAccountAmount(accountName);
 		accountsNode.getNode(accountName, "amount").setValue(value - amount);
 		saveAcountsFile();
+		if(plugin.isEnableLogs()) plugin.getLogManager().addLogTrace("Substracting " + amount + plugin.getPluralSymbol() + " from " + accountName + "'s account.");
 	}
 	
 	/**
@@ -94,6 +96,7 @@ public class EconomyManager implements EconomyService {
 	public void setMoney(String accountName, double amount) {
 		accountsNode.getNode(accountName, "amount").setValue(amount);
 		saveAcountsFile();
+		if(plugin.isEnableLogs()) plugin.getLogManager().addLogTrace("Set" + accountName + " amount to " + amount + plugin.getPluralSymbol());
 	}
 	
 	/**
@@ -106,10 +109,7 @@ public class EconomyManager implements EconomyService {
 			setMoney(accountName, plugin.getDefaultAmount());
 		}
 		saveAcountsFile();
-	}
-	
-	public void testEconomyManager() {
-		System.out.println("Test du manager d'économie !");
+		if(plugin.isEnableLogs()) plugin.getLogManager().addLogTrace("Reseting " + accountName + "'s account.");
 	}
 	
 	/**
@@ -126,10 +126,10 @@ public class EconomyManager implements EconomyService {
 	 * @param accountName
 	 */
 	public void addPlayerAccount(String accountName) {
-			logger.info("adding " + plugin.getDefaultAmount() + " on account " + accountName);
-			accountsNode.getNode(accountName, "amount").setValue(plugin.getDefaultAmount());
-			accountsNode.getNode(accountName, "type").setValue("player");
-			saveAcountsFile();
+		accountsNode.getNode(accountName, "amount").setValue(plugin.getDefaultAmount());
+		accountsNode.getNode(accountName, "type").setValue("player");
+		saveAcountsFile();
+		if(plugin.isEnableLogs()) plugin.getLogManager().addLogTrace("Creating " + accountName + "'s account.");
 	}
 	
 	/**
@@ -141,6 +141,7 @@ public class EconomyManager implements EconomyService {
 		accountsNode.getNode(accountName, "amount").setValue(Double.MAX_VALUE);
 		accountsNode.getNode(accountName, "type").setValue("admin");
 		saveAcountsFile();
+		if(plugin.isEnableLogs()) plugin.getLogManager().addLogTrace("Creating an admin account named " + accountName + "owned by " + owner + ".");
 	}
 	
 	/**
@@ -150,6 +151,7 @@ public class EconomyManager implements EconomyService {
 	public void removePlayerAccount(String accountName) {
 		accountsNode.removeChild(accountName);
 		saveAcountsFile();
+		if(plugin.isEnableLogs()) plugin.getLogManager().addLogTrace("Creating " + accountName + "'s account.");
 	}
 	
 	/**
@@ -159,5 +161,6 @@ public class EconomyManager implements EconomyService {
 	public void removeAdminAccount(String accountName) {
 		accountsNode.removeChild(accountName);
 		saveAcountsFile();
+		if(plugin.isEnableLogs()) plugin.getLogManager().addLogTrace("Removing the admin account named " + accountName + ".");
 	}
 }

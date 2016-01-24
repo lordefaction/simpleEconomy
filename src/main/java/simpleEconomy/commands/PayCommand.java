@@ -7,6 +7,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 import simpleEconomy.main.SimpleEconomy;
 
@@ -35,9 +36,17 @@ public class PayCommand implements CommandExecutor {
 							else src.sendMessage(Text.of("Payement of " + amount + plugin.getPluralSymbol() + " to " + target.getName()));
 							
 							return CommandResult.success();
+						} else {
+							if(plugin.isEnableLogs()) plugin.getLogManager().addLogTrace("You have not enough money to pay " + amount + plugin.getSingularSymbol() + " to " + target.getName() + "!");
+							
+							src.sendMessage(Text.builder("[").color(TextColors.DARK_GREEN)
+									.append(Text.builder("SimpleEconomy").color(TextColors.WHITE)
+									.append(Text.builder(" You have not enough money !")
+									.build()).build()).build());
 						}
 					}
 				}
+				
 				return CommandResult.empty();
 			} else {
 				src.sendMessage(Text.of("This command can only be launch by a player !"));

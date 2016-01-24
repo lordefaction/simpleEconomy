@@ -23,19 +23,21 @@ public class MoneyCommand implements CommandExecutor {
 		try {
 			if(src instanceof Player) {
 				Player player = (Player) src;
+				
 				double amount = plugin.getEconomyManager().getAccountAmount(player.getUniqueId().toString());
 				
 				if((amount < 2) && (plugin.isEnableSingularSymbol() == true)) {
+					
 					src.sendMessage(Text.builder("[").color(TextColors.DARK_GREEN)
-							.append(Text.builder("SimpleEconomy]").color(TextColors.WHITE)
-							.append(Text.builder("] Your balance : ").color(TextColors.DARK_GREEN)
+							.append(Text.builder("SimpleEconomy").color(TextColors.WHITE)
+							.append(Text.builder(" Your balance : ").color(TextColors.DARK_GREEN)
 							.append(Text.builder(amount + " " + plugin.getSingularSymbol())
 							.build()).build()).build()).build());
 				} else {
 
 					src.sendMessage(Text.builder("[").color(TextColors.DARK_GREEN)
-							.append(Text.builder("SimpleEconomy]").color(TextColors.WHITE)
-							.append(Text.builder("] Your balance : ").color(TextColors.DARK_GREEN)
+							.append(Text.builder("SimpleEconomy").color(TextColors.WHITE)
+							.append(Text.builder(" Your balance : ").color(TextColors.DARK_GREEN)
 							.append(Text.builder(amount + " " + plugin.getPluralSymbol())
 							.build()).build()).build()).build());
 				}

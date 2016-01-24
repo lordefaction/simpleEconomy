@@ -27,7 +27,7 @@ public class BalanceCommand implements CommandExecutor {
 				
 				if((amount < 2) && (plugin.isEnableSingularSymbol() == true)) {
 					src.sendMessage(Text.builder("[").color(TextColors.DARK_GREEN)
-							.append(Text.builder("Money]").color(TextColors.WHITE)
+							.append(Text.builder("SimpleEconomy]").color(TextColors.WHITE)
 							.append(Text.builder("] " + target.getName() + "'s balance : ").color(TextColors.DARK_GREEN)
 							.append(Text.builder(amount + " " + plugin.getSingularSymbol())
 							.build()).build()).build()).build());

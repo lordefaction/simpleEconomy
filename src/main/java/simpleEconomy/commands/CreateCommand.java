@@ -35,6 +35,7 @@ public class CreateCommand implements CommandExecutor {
 				} else if (type.equals("admin")) {
 					Player owner = (Player) src;
 					String name = args.<String>getOne("name").get();
+					if(plugin.isEnableLogs()) plugin.getLogManager().addLogTrace(src.getName() + " execute command : /create" + type + " " + name);
 					
 					if(!plugin.getEconomyManager().checkAccount(name)) {
 						plugin.getEconomyManager().addAdminAccount(name, owner);
@@ -53,7 +54,6 @@ public class CreateCommand implements CommandExecutor {
 			
 		} catch(NullPointerException exception) {
 			src.sendMessage(Text.of("Error while processing your request ! Please contact your administrator !"));
-			plugin.getLogger().error("Le joueur " + src.getName() + " a demande d'afficher la balance du joueur " + args.<Player>getOne("player").get().getName());
 			plugin.getLogger().error(exception.getMessage());
 			return CommandResult.empty();
 		}

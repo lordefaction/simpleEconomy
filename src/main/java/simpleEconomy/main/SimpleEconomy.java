@@ -28,17 +28,7 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
 
-import simpleEconomy.commands.BalanceCommand;
-import simpleEconomy.commands.CreateAdminAccountCommand;
-import simpleEconomy.commands.CreateCommand;
-import simpleEconomy.commands.CreatePlayerAccountCommand;
-import simpleEconomy.commands.GiveCommand;
-import simpleEconomy.commands.MoneyCommand;
-import simpleEconomy.commands.MoneyHelpCommand;
-import simpleEconomy.commands.PayCommand;
-import simpleEconomy.commands.SetCommand;
-import simpleEconomy.commands.MoneyVersionCommand;
-import simpleEconomy.commands.TakeCommand;
+import simpleEconomy.commands.*;
 
 import com.google.inject.Inject;
 
@@ -49,6 +39,7 @@ public class SimpleEconomy {
 	private static Game game;
 	private static CommandManager cmdManager;
 	private EconomyManager economyManager;
+	private LogManager logManager;
 	public static HashMap<String, CommandSpec> commandsList;
 	
 	@Inject
@@ -140,14 +131,117 @@ public class SimpleEconomy {
 	 * Registering commands on commandManager
 	 */
 	private void commandsRegistering() {
+		
+		//money help
 		CommandSpec moneyHelpCommand = CommandSpec.builder()
-				.description(Text.of("/simpleEconomy help"))
-				.extendedDescription(Text.of("Display simpleEconomy commands list."))
-				.permission("simpleEconomy.help")
-				.executor(new MoneyHelpCommand())
+				.description(Text.of("/money help"))
+				.extendedDescription(Text.of("Display simpleEconomy commands."))
+				.permission("simpleEconomy.user.help")
+				.executor(new MoneyHelpCommand(this))
 				.build();
 		commandsList.put("help", moneyHelpCommand);
 		
+		//money balance <player>
+		CommandSpec balanceCommand = CommandSpec.builder()
+				.description(Text.of("/money balance <player>"))
+				.extendedDescription(Text.of("Display the specified player account."))
+				.permission("simpleEconomy.user.balance")
+				.arguments(GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))))
+				.executor(new BalanceCommand(this))
+				.build();
+		commandsList.put("balance", balanceCommand);
+		
+		//money pay <player> <amount>
+		CommandSpec payCommand = CommandSpec.builder()
+				.description(Text.of("/money pay <player> <amount>"))
+				.extendedDescription(Text.of("Pay the specified sum to the indicate player."))
+				.permission("simpleEconomy.user.pay")
+				.arguments(GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("amount"))))
+				.executor(new PayCommand(this))
+				.build();
+		commandsList.put("pay", payCommand);
+		
+		
+		//money give <player> <amount>
+		CommandSpec giveCommand = CommandSpec.builder()
+				.description(Text.of("/money give <player> <amount>"))
+				.extendedDescription(Text.of("Give the specified sum to a player."))
+				.permission("simpleEconomy.admin.give")
+				.arguments(GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("amount"))))
+				.executor(new GiveCommand(this))
+				.build();
+		commandsList.put("give", giveCommand);
+		
+		//money take <player> <amount>
+		CommandSpec takeCommand = CommandSpec.builder()
+				.description(Text.of("/money take <player> <amount>"))
+				.extendedDescription(Text.of("Remove the specified sum to a player."))
+				.permission("simpleEconomy.admin.take")
+				.arguments(GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("amount"))))
+				.executor(new TakeCommand(this))
+				.build();
+		commandsList.put("take", takeCommand);
+		
+		//money set <player> <amount>
+		CommandSpec setCommand = CommandSpec.builder()
+				.description(Text.of("/money set <player> <amount>"))
+				.extendedDescription(Text.of("Set the specified sum on the indicate player account."))
+				.permission("simpleEconomy.admin.set")
+				.arguments(GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("amount"))))
+				.executor(new SetCommand(this))
+				.build();
+		commandsList.put("set", setCommand);
+		
+		//money reset <player>
+		
+		//money create <type> <nom>
+		CommandSpec createCommand = CommandSpec.builder()
+				.description(Text.of("/money create"))
+				.extendedDescription(Text.of("Create a new player or admin account."))
+				.permission("simpleEconomy.admin.create")
+				.arguments(GenericArguments.onlyOne(GenericArguments.player(Text.of("type"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("name"))))
+				.executor(new CreateCommand(this))
+				.build();
+		commandsList.put("create", createCommand);
+		
+		//money remove <type> <nom>
+		CommandSpec removeCommand = CommandSpec.builder()
+				.description(Text.of("/money remove"))
+				.extendedDescription(Text.of("Remove a player or admin account."))
+				.permission("simpleEconomy.admin.remove")
+				.arguments(GenericArguments.onlyOne(GenericArguments.player(Text.of("type"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("name"))))
+				.executor(new RemoveCommand(this))
+				.build();
+		commandsList.put("create", removeCommand);
+		
+		
+		//money
+		CommandSpec moneyCommand = CommandSpec.builder()
+				.description(Text.of("/money"))
+				.extendedDescription(Text.of("Display your account."))
+				.permission("simpleEconomy.money")
+				.executor(new MoneyCommand(this))
+				.child(moneyHelpCommand, "help")
+				.child(balanceCommand, "balance")
+				.child(payCommand, "pay")
+				.child(giveCommand, "give")
+				.child(takeCommand, "take")
+				.child(setCommand, "set")
+				.child(createCommand, "create")
+				.child(removeCommand, "create")
+				.build();
+		commandsList.put("money", moneyCommand);
+		
+		//simpleEconomy
+		CommandSpec moneyVersionCommand = CommandSpec.builder()
+				.description(Text.of("/simpleEconomy"))
+				.extendedDescription(Text.of("Display simpleEconomy version."))
+				.permission("simpleEconomy.version")
+				.executor(new MoneyVersionCommand(this))
+				.build();
+		commandsList.put("version", moneyVersionCommand);
+		
+		//simpleEconomy reload
 		class MoneyReloadCommand implements CommandExecutor {
 			public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 				loadConfig();
@@ -159,140 +253,14 @@ public class SimpleEconomy {
 		CommandSpec moneyReloadCommand = CommandSpec.builder()
 				.description(Text.of("/simpleEconomy reload"))
 				.extendedDescription(Text.of("Reload simpleEconomy config."))
-				.permission("simpleEconomy.admin")
+				.permission("simpleEconomy.admin.reload")
 				.executor(new MoneyReloadCommand())
 				.build();
 		commandsList.put("reload", moneyReloadCommand);
 		
-		CommandSpec moneyVersionCommand = CommandSpec.builder()
-				.description(Text.of("/simpleEconomy"))
-				.extendedDescription(Text.of("Display simpleEconomy version."))
-				.permission("simpleEconomy.version")
-				.executor(new MoneyVersionCommand())
-				.build();
-		commandsList.put("version", moneyVersionCommand);
-		
-		CommandSpec balanceCommand = CommandSpec.builder()
-				.description(Text.of("/money balance <player>"))
-				.extendedDescription(Text.of("Display the specified player account."))
-				.permission("simpleEconomy.money.balance")
-				.arguments(GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))))
-				.executor(new BalanceCommand(this))
-				.build();
-		commandsList.put("balance", balanceCommand);
-		
-		CommandSpec payCommand = CommandSpec.builder()
-				.description(Text.of("/money pay <player> <amount>"))
-				.extendedDescription(Text.of("Pay the specified sum to the indicate player."))
-				.permission("simpleEconomy.money.pay")
-				.arguments(GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("amount"))))
-				.executor(new PayCommand(this))
-				.build();
-		commandsList.put("pay", payCommand);
-		
-		CommandSpec giveCommand = CommandSpec.builder()
-				.description(Text.of("/money give <player> <amount>"))
-				.extendedDescription(Text.of("Give the specified sum to a player."))
-				.permission("simpleEconomy.admin.give")
-				.arguments(GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("amount"))))
-				.executor(new GiveCommand(this))
-				.build();
-		commandsList.put("give", giveCommand);
-		
-		CommandSpec takeCommand = CommandSpec.builder()
-				.description(Text.of("/money take <player> <amount>"))
-				.extendedDescription(Text.of("Remove the specified sum to a player."))
-				.permission("simpleEconomy.admin.take")
-				.arguments(GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("amount"))))
-				.executor(new TakeCommand(this))
-				.build();
-		commandsList.put("take", takeCommand);
-		
-		CommandSpec setCommand = CommandSpec.builder()
-				.description(Text.of("/money set <player> <amount>"))
-				.extendedDescription(Text.of("Set the specified sum on the indicate player account."))
-				.permission("simpleEconomy.admin.set")
-				.arguments(GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("amount"))))
-				.executor(new SetCommand(this))
-				.build();
-		commandsList.put("set", setCommand);
-		
-		CommandSpec createPlayerAccountCommand = CommandSpec.builder()
-				.description(Text.of("/money create playerAccount <player>"))
-				.extendedDescription(Text.of("Create an account for the specified player."))
-				.permission("simpleEconomy.admin.create.player")
-				.arguments(GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))))
-				.executor(new CreatePlayerAccountCommand(this))
-				.build();
-		commandsList.put("create playerAccount", createPlayerAccountCommand);
-		
-		if(this.isEnableAdminAccounts()) {
-			CommandSpec createAdminAccountCommand = CommandSpec.builder()
-					.description(Text.of("/money create adminAccount <name>"))
-					.extendedDescription(Text.of("Create a new admin account with the specified name."))
-					.permission("simpleEconomy.admin.create.admin")
-					.arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("name"))))
-					.executor(new CreateAdminAccountCommand(this))
-					.build();
-			commandsList.put("create adminAccount", createAdminAccountCommand);
-			
-			CommandSpec createCommand = CommandSpec.builder()
-					.description(Text.of("/money create"))
-					.extendedDescription(Text.of("Create a new player or admin account."))
-					.permission("simpleEconomy.admin.create")
-					.executor(new CreateCommand())
-					.child(createPlayerAccountCommand, "playerAccount")
-					.child(createAdminAccountCommand, "adminAccount")
-					.build();
-			
-			CommandSpec moneyCommand = CommandSpec.builder()
-					.description(Text.of("/money"))
-					.extendedDescription(Text.of("Display your account."))
-					.permission("simpleEconomy.money.account")
-					.executor(new MoneyCommand(this))
-					.child(moneyHelpCommand, "help")
-					.child(moneyReloadCommand, "reload")
-					.child(balanceCommand, "balance")
-					.child(payCommand, "pay")
-					.child(giveCommand, "give")
-					.child(takeCommand, "take")
-					.child(setCommand, "set")
-					.child(createCommand, "create")
-					.build();
-			
-			commandsList.put("money", moneyCommand);
-			
-			cmdManager.register(this, moneyCommand, "money");
-			
-		} else {
-			CommandSpec createCommand = CommandSpec.builder()
-					.description(Text.of("/money create"))
-					.extendedDescription(Text.of("Create a new player or admin account."))
-					.permission("simpleEconomy.admin.create")
-					.executor(new CreateCommand())
-					.child(createPlayerAccountCommand, "playerAccount")
-					.build();
-			
-			CommandSpec moneyCommand = CommandSpec.builder()
-					.description(Text.of("/money"))
-					.extendedDescription(Text.of("Display your account."))
-					.permission("simpleEconomy.money.account")
-					.executor(new MoneyCommand(this))
-					.child(moneyHelpCommand, "help")
-					.child(moneyReloadCommand, "reload")
-					.child(balanceCommand, "balance")
-					.child(payCommand, "pay")
-					.child(giveCommand, "give")
-					.child(takeCommand, "take")
-					.child(setCommand, "set")
-					.child(createCommand, "create")
-					.build();
-			
-			commandsList.put("money", moneyCommand);
-			
-			//cmdManager.register(this, simpleEconomyCommand, "simpleEconomy");
-			cmdManager.register(this, moneyCommand, "money");
-		}
+		cmdManager.register(this, moneyCommand, "money");
+		cmdManager.register(this, moneyVersionCommand, "simpleEconomy");
+		cmdManager.register(this, moneyReloadCommand, "simpleEconomy reload");
 	}
 	
 	/**
@@ -314,6 +282,13 @@ public class SimpleEconomy {
 		
 		economyManager = new EconomyManager(this);
 		
+		if(this.isEnableLogs()) {
+			logManager = new LogManager(this);
+		}
+		
+		logManager.addLogTrace("Plugin simpleEconomy initialization !");
+		logManager.addLogTrace("ceci est un test !");
+		
 		getLogger().info("SimpleEconomy is made by lorde_faction.");
 		getLogger().info("This plugin is still in development.");
 		getLogger().info("It may contain bugs and could be unstable. Please save your server before use it !");
@@ -324,6 +299,7 @@ public class SimpleEconomy {
 	@Listener
 	public void onGameStopped(GameStoppedServerEvent event) {
 		economyManager.saveAcountsFile();
+		logManager.closeLogFile();
 		saveConfig();
 		getLogger().info("SimpleEconomy stopped.");
 	}
@@ -359,6 +335,14 @@ public class SimpleEconomy {
 	 */
 	public EconomyManager getEconomyManager() {
 		return economyManager;
+	}
+	
+	/**
+	 * Getter on logManager
+	 * @return logyManager
+	 */
+	public LogManager getLogManager() {
+		return logManager;
 	}
 	
 	/**
@@ -456,5 +440,9 @@ public class SimpleEconomy {
 
 	public void setEnableAdminAccounts(boolean enableAdminAccounts) {
 		this.enableAdminAccounts = enableAdminAccounts;
+	}
+
+	public String getLogPath() {
+		return getConfigDir().getAbsolutePath() + "/simpleEconomy.log";
 	}
 }

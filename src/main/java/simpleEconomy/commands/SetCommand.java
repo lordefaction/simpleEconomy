@@ -29,6 +29,7 @@ public class SetCommand implements CommandExecutor {
 					
 					if((amount < 2) && (plugin.isEnableSingularSymbol() == true)) src.sendMessage(Text.of(target.getName() + "'s account's amount is now " + amount + plugin.getSingularSymbol()));
 					else src.sendMessage(Text.of(target.getName() + "'s account's amount is now " + amount + plugin.getPluralSymbol()));
+					
 					return CommandResult.success();
 				} else src.sendMessage(Text.of("Removing the sum impossible. The target account doesn't exist !"));
 			} else src.sendMessage(Text.of("Removing the sum impossible. Wrong parameters !"));

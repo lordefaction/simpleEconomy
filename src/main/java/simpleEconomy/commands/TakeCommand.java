@@ -29,6 +29,7 @@ public class TakeCommand implements CommandExecutor {
 					
 					if((amount < 2) && (plugin.isEnableSingularSymbol() == true)) src.sendMessage(Text.of("Removing of " + amount + plugin.getSingularSymbol() + " to " + target.getName()));
 					else src.sendMessage(Text.of("Removing of " + amount + plugin.getPluralSymbol() + " to " + target.getName()));
+					
 					return CommandResult.success();
 				} else src.sendMessage(Text.of("Removing the sum impossible. The target account doesn't exist !"));
 			} else src.sendMessage(Text.of("Removing the sum impossible. Wrong parameters !"));
